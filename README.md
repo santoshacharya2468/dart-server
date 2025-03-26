@@ -1,4 +1,4 @@
-# 🦄 Dartly
+# 🦄 Dart Server
 
 > A minimal, expressive web framework for Dart — designed for clean routing, structured error handling, and developer happiness.
 
@@ -14,11 +14,3 @@
 - 🖖 Type-safe request/response handling
 
 ---
-
-## 📦 Installation
-
-Add Dartly to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  dartly: ^0.1.0
