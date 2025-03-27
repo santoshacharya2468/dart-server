@@ -1,29 +1,34 @@
 import 'dart:async';
 
 import 'package:dartserver/dartserver.dart';
+import 'package:dartserver/src/response/responses.dart';
+
+import '../router/user_router.dart';
 
 class AuthMiddleware implements IHttpRequestMiddleware {
   @override
-  FutureOr<bool> handle(RequestContext ctx) {
-    final username = ctx.query("token");
+  FutureOr<HttpResult?> onRequest(RequestContext ctx) {
+    final username = ctx.header("token");
     if (username?.isNotEmpty == true) {
-      ctx.setLocal("user", username);
-      return false;
+      final user =
+          users.firstWhereOrNull((element) => element.username == username);
+      if (user != null) {
+        ctx.setLocal("user", user);
+        return null;
+      }
+      return HttpResult(data: "Invalid Username", statusCode: 401);
     }
-    ctx.sendStatus(401, message: "Invalid Token");
-    return true;
+    return HttpResult(data: "no token provided", statusCode: 401);
   }
 }
 
 class IsAuthAdminMiddleware implements IHttpRequestMiddleware {
   @override
-  FutureOr<bool> handle(RequestContext ctx) {
-    final username = ctx.query("admin");
-    if (username?.isNotEmpty == true) {
-      ctx.setLocal("user", username);
-      return false;
+  FutureOr<HttpResult?> onRequest(RequestContext ctx) {
+    final user = ctx.getLocal<User?>("user");
+    if (user != null && user.username == "admin") {
+      return null;
     }
-    ctx.sendStatus(403, message: "Forbidden resource");
-    return true;
+    return HttpResult(data: "forbidden resource", statusCode: 401);
   }
 }

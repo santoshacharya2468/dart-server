@@ -5,7 +5,7 @@ import 'package:dartserver/src/response/http_response.dart';
 Router authRouter() {
   final authRouter = Router();
   authRouter.post('/login', (context) async {
-    final body = await context.jsonBody;
+    final body = await context.bodyMap();
     final username = body["username"];
     final password = body["password"];
     if (username == "admin" && password == "admin") {
@@ -14,7 +14,7 @@ Router authRouter() {
     return HttpResult.unauthorized({"message": "Invalid credentials"});
   });
   authRouter.post('/register', (context) async {
-    final body = await context.jsonBody;
+    final body = await context.bodyMap();
     final username = body["username"];
     final password = body["password"];
     if (username == "admin" && password == "admin") {

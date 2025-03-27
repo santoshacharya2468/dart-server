@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:dartserver/src/request/request.dart';
+import 'package:dartserver/src/response/responses.dart';
 import 'package:dartserver/src/server/server_plugin.dart';
 
 abstract class IHttpRequestMiddleware implements IServerPlugIn {
-  /// return true if the request is handled, false if the next middleware should be called
-  FutureOr<bool> handle(RequestContext ctx);
+  ///
+  /// if handle return [HttpResult] object then the  entire request pipeline will be short circuited
+  /// to move control to next middleware in request pipile you must return null
+  FutureOr<HttpResult?> onRequest(RequestContext ctx);
 }

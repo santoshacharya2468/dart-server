@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dartserver/dartserver.dart';
 import 'package:dartserver/src/exception/http_exception.dart';
 import 'package:dartserver/src/exception/uncaught_exception_filter.dart';
+import 'package:dartserver/src/response/responses.dart';
 import 'dart:async' show Future, unawaited;
 import 'package:dartserver/src/router/http_method.dart';
 
@@ -63,12 +64,16 @@ class DartleServer {
     try {
       if (handler != null) {
         context.pattern = route!.path;
-        bool rejectionFromMiddleware = false;
+        HttpResult? middlewareResponse;
         for (var middleware in route.middlewares) {
-          rejectionFromMiddleware = await middleware.handle(context);
-          if (rejectionFromMiddleware) break;
+          middlewareResponse = await middleware.onRequest(context);
+          if (middlewareResponse != null) break;
         }
-        if (rejectionFromMiddleware) return;
+        if (middlewareResponse != null) {
+          context.sendStatus(middlewareResponse.statusCode,
+              message: middlewareResponse.data.toString());
+          return;
+        }
         final response = await handler(context);
         context.json(response.data, statusCode: response.statusCode);
       } else {

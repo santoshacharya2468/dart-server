@@ -5,7 +5,7 @@ import 'package:dartserver/src/router/http_method.dart';
 
 extension HttpRequestContextExtension on RequestContext {
   String get path => request.uri.path;
-  Map<String, dynamic> get queryParams {
+  Map<String, dynamic> queryParams() {
     final queryString = request.uri.query;
     if (queryString.isEmpty) return {};
 
@@ -19,7 +19,7 @@ extension HttpRequestContextExtension on RequestContext {
   }
 
   //get path params
-  Map<String, dynamic> get pathParams {
+  Map<String, dynamic> pathParams() {
     final pathParams = <String, dynamic>{};
     final routePattern = pattern;
     final actualPath = path;
@@ -36,18 +36,22 @@ extension HttpRequestContextExtension on RequestContext {
   }
 
   String? pathParam(String key) {
-    return pathParams[key];
+    return pathParams()[key];
   }
 
   int? pathParamInt(String key) {
-    return int.tryParse(pathParams[key] ?? "");
+    return int.tryParse(pathParams()[key] ?? "");
+  }
+
+  String? header(String key) {
+    return request.headers.value(key);
   }
 
   String? query(String key) {
-    return queryParams[key];
+    return queryParams()[key];
   }
 
-  Future<Map<String, dynamic>> get jsonBody async {
+  Future<Map<String, dynamic>> bodyMap() async {
     try {
       final content = utf8.decode(await request.single);
       if (content.isEmpty) return {};
@@ -58,7 +62,7 @@ extension HttpRequestContextExtension on RequestContext {
   }
 
   Future<T> bodyJson<T>(T Function(Map<String, dynamic> json) func) async {
-    final json = await jsonBody;
+    final json = await bodyMap();
     return func(json);
   }
 

@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:dartserver/dartserver.dart';
+import 'package:dartserver/src/response/responses.dart';
 
-class LoggerMiddleware implements IHttpRequestMiddleware {
+class LoggerMiddleware extends IHttpRequestMiddleware {
   @override
-  FutureOr<bool> handle(RequestContext ctx) {
+  FutureOr<HttpResult?> onRequest(RequestContext ctx) {
     print("${ctx.request.method} ${ctx.request.uri}");
-    return false;
+    return null;
   }
 }
